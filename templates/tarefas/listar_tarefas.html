@@ -1,1 +1,59 @@
-<h1>Página: Lista de Tarefas Funcionando!</h1>
+{% extends 'base.html' %}
+
+{% block title %}Minhas Tarefas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Minhas Tarefas</h1>
+    <div class="btn-group btn-group-sm">
+        <a href="{% url 'listar_tarefas' %}" class="btn btn-outline-secondary {% if not filtro %}active{% endif %}">Todas</a>
+        <a href="?status=pendentes" class="btn btn-outline-secondary {% if filtro == 'pendentes' %}active{% endif %}">Pendentes</a>
+        <a href="?status=concluidas" class="btn btn-outline-secondary {% if filtro == 'concluidas' %}active{% endif %}">Concluídas</a>
+    </div>
+</div>
+
+{% if tarefas %}
+<div class="list-group shadow-sm">
+    {% for t in tarefas %}
+    <div class="list-group-item d-flex justify-content-between align-items-start gap-3">
+        <div class="flex-grow-1">
+            <div class="fw-semibold {% if t.concluida %}text-decoration-line-through text-muted{% endif %}">
+                {{ t.titulo }}
+            </div>
+            {% if t.descricao %}<div class="small text-muted">{{ t.descricao }}</div>{% endif %}
+            <div class="mt-1">
+                <span class="badge {% if t.prioridade == 'A' %}bg-danger{% elif t.prioridade == 'M' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                    {{ t.get_prioridade_display }}
+                </span>
+                {% if t.prazo %}
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-calendar-event"></i> {{ t.prazo|date:"d/m/Y" }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="d-flex gap-1">
+            <form method="post" action="{% url 'alternar_tarefa' t.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm {% if t.concluida %}btn-success{% else %}btn-outline-success{% endif %}"
+                        title="Concluir / reabrir">
+                    <i class="bi bi-check-lg"></i>
+                </button>
+            </form>
+            <a href="{% url 'editar_tarefa' t.pk %}" class="btn btn-sm btn-outline-primary" title="Editar">
+                <i class="bi bi-pencil"></i>
+            </a>
+            <a href="{% url 'excluir_tarefa' t.pk %}" class="btn btn-sm btn-outline-danger" title="Excluir">
+                <i class="bi bi-trash"></i>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center text-muted py-5">
+    <p>Nenhuma tarefa por aqui.</p>
+    <a href="{% url 'criar_tarefa' %}" class="btn btn-primary">Criar a primeira tarefa</a>
+</div>
+{% endif %}
+{% endblock %}

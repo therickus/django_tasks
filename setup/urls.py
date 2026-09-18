@@ -1,7 +1,10 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', RedirectView.as_view(pattern_name='listar_tarefas')),
     path('tarefas/', include('tarefas.urls')),
+    path('usuarios/', include('usuarios.urls')),
 ]

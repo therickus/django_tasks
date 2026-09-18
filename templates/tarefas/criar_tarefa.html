@@ -1,1 +1,32 @@
-<h1>Página: Formulário de Nova Tarefa Funcionando!</h1>
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo_pagina }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h4 mb-3">{{ titulo_pagina }}</h1>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% for campo in form %}
+                    <div class="mb-3 {% if campo.field.widget.input_type == 'checkbox' %}form-check{% endif %}">
+                        {% if campo.field.widget.input_type == 'checkbox' %}
+                            {{ campo }}
+                            <label class="form-check-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+                        {% else %}
+                            <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+                            {{ campo }}
+                        {% endif %}
+                        {% for erro in campo.errors %}<div class="text-danger small">{{ erro }}</div>{% endfor %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                    <a href="{% url 'listar_tarefas' %}" class="btn btn-outline-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
